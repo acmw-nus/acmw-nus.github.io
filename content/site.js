@@ -1,5 +1,7 @@
 export const site = {
   description: "ACM-W NUS is a student-led chapter at the National University of Singapore for women and allies in computing.",
+  email: "nusacmwchapter@gmail.com",
+  instagram: "acmwnus",
   chapter: {
     name: "ACM-W NUS Chapter",
     shortName: "ACM-W NUS",
@@ -18,7 +20,10 @@ export const site = {
     { label: "Team", page: "team" },
     { label: "Join", page: "join" },
   ],
-  socialLinks: [],
+  socialLinks: [
+    { type: "instagram", label: "@acmwnus", href: "https://www.instagram.com/acmwnus" },
+    { type: "email", label: "nusacmwchapter@gmail.com", href: "mailto:nusacmwchapter@gmail.com" },
+  ],
   notFound: {
     message: "This page is not available.",
   },

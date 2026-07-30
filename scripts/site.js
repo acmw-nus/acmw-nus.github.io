@@ -1,9 +1,9 @@
-import { aboutPage } from "../content/about.js";
-import { eventsPage } from "../content/events-page.js";
-import { homePage } from "../content/home.js";
-import { joinPage } from "../content/join-page.js";
-import { site } from "../content/site.js";
-import { teamPage } from "../content/team-page.js";
+import { aboutPage } from "../content/about.js?v=2";
+import { eventsPage } from "../content/events-page.js?v=2";
+import { homePage } from "../content/home.js?v=2";
+import { joinPage } from "../content/join-page.js?v=2";
+import { site } from "../content/site.js?v=2";
+import { teamPage } from "../content/team-page.js?v=2";
 
 const pages = {
   home: homePage,
@@ -11,6 +11,7 @@ const pages = {
   events: eventsPage,
   team: teamPage,
   join: joinPage,
+  event: { title: "Event Details", description: "ACM-W NUS event details and registration" },
 };
 
 const page = document.body.dataset.page || "home";
@@ -18,23 +19,70 @@ const pageData = pages[page];
 const main = document.querySelector("[data-page-content]");
 const isHomePage = page === "home";
 
-updateDocumentMetadata(pageData);
+async function loadEventsData() {
+  try {
+    const res = await fetch(getAssetHref("content/events.json"));
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load content/events.json, using fallback events if available.", err);
+  }
+  return toArray(eventsPage.events);
+}
 
-if (main) {
-  main.innerHTML = `
-    ${renderHeader()}
-    <main class="site-main">
-      <div class="container">
-        ${renderPage(page)}
-      </div>
-    </main>
-    ${renderFooter()}
-  `;
+function categorizeEvents(eventsList) {
+  const now = new Date();
+  const upcoming = [];
+  const past = [];
 
-  if (page === "join" && typeof main.querySelectorAll === "function") {
-    initializeJoinTabs(main);
+  toArray(eventsList).forEach((evt) => {
+    const timeBoundaryStr = evt.endDate || evt.startDate;
+    if (!timeBoundaryStr) {
+      upcoming.push(evt);
+      return;
+    }
+    const evtDate = new Date(timeBoundaryStr);
+    if (isNaN(evtDate.getTime()) || evtDate >= now) {
+      upcoming.push(evt);
+    } else {
+      past.push(evt);
+    }
+  });
+
+  upcoming.sort((a, b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
+  past.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+
+  return { upcoming, past, all: eventsList };
+}
+
+async function initApp() {
+  updateDocumentMetadata(pageData);
+
+  const rawEvents = await loadEventsData();
+  const categorizedEvents = categorizeEvents(rawEvents);
+
+  if (main) {
+    main.innerHTML = `
+      ${renderHeader()}
+      <main class="site-main">
+        <div class="container">
+          ${renderPage(page, categorizedEvents)}
+        </div>
+      </main>
+      ${renderFooter()}
+    `;
+
+    if (page === "join" && typeof main.querySelectorAll === "function") {
+      initializeJoinTabs(main);
+    }
   }
 }
+
+initApp();
 
 function renderHeader() {
   const brand = renderBrand();
@@ -123,21 +171,34 @@ function renderFooter() {
   `;
 }
 
+function getSocialIcon(type, href) {
+  if (type === "instagram" || (href && href.includes("instagram.com"))) {
+    return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
+  }
+  if (type === "email" || (href && href.startsWith("mailto:"))) {
+    return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+  }
+  return "";
+}
+
 function renderFooterLink(item) {
   const label = value(item?.label);
   const href = value(item?.href);
+  const type = value(item?.type);
 
   if (!label || !href) {
     return "";
   }
 
+  const icon = getSocialIcon(type, href);
   const external = isExternalHref(href);
-  return `<a href="${attr(href)}" ${external ? 'target="_blank" rel="noreferrer"' : ""}>${html(label)}</a>`;
+
+  return `<a href="${attr(href)}" class="footer__link" ${external ? 'target="_blank" rel="noreferrer"' : ""}>${icon}<span>${html(label)}</span></a>`;
 }
 
-function renderPage(currentPage) {
+function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] }) {
   if (currentPage === "home") {
-    return renderHomePage(homePage);
+    return renderHomePage(homePage, categorizedEvents);
   }
 
   if (currentPage === "about") {
@@ -145,7 +206,18 @@ function renderPage(currentPage) {
   }
 
   if (currentPage === "events") {
-    return renderEventsPage(eventsPage);
+    return renderEventsPage(eventsPage, categorizedEvents);
+  }
+
+  if (currentPage === "event") {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const allEvents = categorizedEvents.all || [];
+    const matchedEvent = allEvents.find((evt) => evt.id === id) || allEvents[0];
+    if (matchedEvent?.title) {
+      document.title = `${matchedEvent.title} - ACM-W NUS`;
+    }
+    return renderEventDetailPage(matchedEvent);
   }
 
   if (currentPage === "team") {
@@ -159,13 +231,13 @@ function renderPage(currentPage) {
   return renderNotFoundPage();
 }
 
-function renderHomePage(data) {
+function renderHomePage(data, categorizedEvents = { upcoming: [], past: [] }) {
   const hero = data.hero || {};
   const heroActions = renderActionRow(hero.actions, "hero__actions");
   const heroImage = value(hero.image || site.chapter?.logo);
   const eventsPreview = data.eventsPreview || {};
   const eventLimit = Number.isFinite(eventsPreview.limit) ? eventsPreview.limit : 2;
-  const visibleEvents = toArray(eventsPage.events).slice(0, eventLimit);
+  const visibleEvents = toArray(categorizedEvents.upcoming).slice(0, eventLimit);
 
   return `
     ${value(hero.heading) || value(hero.intro) || heroActions || heroImage
@@ -186,10 +258,10 @@ function renderHomePage(data) {
       : ""}
 
     ${renderEventSection({
-      heading: eventsPreview.heading,
+      heading: eventsPreview.heading || "Upcoming events",
       intro: eventsPreview.intro,
       events: visibleEvents,
-      emptyState: eventsPreview.emptyState,
+      emptyState: eventsPreview.emptyState || "No upcoming events scheduled right now.",
     })}
   `;
 }
@@ -227,14 +299,156 @@ function renderAboutPage(data) {
   `;
 }
 
-function renderEventsPage(data) {
+function renderEventsPage(data, categorizedEvents = { upcoming: [], past: [] }) {
+  const upcomingEvents = toArray(categorizedEvents.upcoming);
+  const pastEvents = toArray(categorizedEvents.past);
+
   return `
     ${renderPageHeading(data)}
+
     ${renderEventSection({
-      events: data.events,
-      emptyState: data.emptyState,
+      heading: data.upcomingHeading || "Upcoming Events",
+      events: upcomingEvents,
+      emptyState: data.upcomingEmptyState || "No upcoming events scheduled right now. Check back soon!",
     })}
+
+    ${pastEvents.length || data.pastHeading
+      ? renderEventSection({
+          heading: data.pastHeading || "Past Events",
+          events: pastEvents,
+          emptyState: data.pastEmptyState || "No past events to show yet.",
+        })
+      : ""}
   `;
+}
+
+function renderEventDetailPage(event) {
+  if (!event) {
+    return `
+      <section class="section">
+        <a class="back-link" href="${attr(getPageHref("events"))}">&larr; Back to all events</a>
+        ${renderUtilityNote("Event not found. Please check back later or view our full list of events.")}
+      </section>
+    `;
+  }
+
+  const title = value(event.title || "Event");
+  const summary = value(event.summary);
+  const description = value(event.description || summary);
+  const dateStr = value(event.displayDate || event.date);
+  const timeStr = formatTo24HourTime(value(event.displayTime || event.time));
+  const venueStr = value(event.venue || event.location);
+  const poster = value(event.poster || event.image);
+  const signUpUrl = value(event.signUpUrl);
+  const tags = toArray(event.tags).map((tag) => value(tag)).filter(Boolean);
+
+  const posterPath = poster ? getAssetHref(poster) : "";
+
+  const now = new Date();
+  const timeBoundaryStr = event.endDate || event.startDate;
+  const isPast = timeBoundaryStr && !isNaN(new Date(timeBoundaryStr).getTime()) && new Date(timeBoundaryStr) < now;
+  const statusBadge = isPast
+    ? `<span class="event-status-badge event-status-badge--past">Past Event</span>`
+    : `<span class="event-status-badge event-status-badge--upcoming">Upcoming Event</span>`;
+
+  return `
+    <div class="event-detail-page">
+      <div class="event-detail-header">
+        <a class="back-link" href="${attr(getPageHref("events"))}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to all events
+        </a>
+      </div>
+
+      <article class="event-detail">
+        <div class="event-detail__sidebar">
+          ${posterPath
+            ? `<div class="event-detail__poster-card">
+                <a href="${attr(posterPath)}" target="_blank" rel="noopener noreferrer" title="Click to view full poster image">
+                  <img class="event-detail__poster-img" src="${attr(posterPath)}" alt="${attr(title)}">
+                </a>
+               </div>`
+            : ""}
+
+          <div class="event-detail__cta-card">
+            ${signUpUrl && !isPast
+              ? `<a class="button button--primary button--full button--lg" href="${attr(signUpUrl)}" target="_blank" rel="noreferrer">
+                  Sign Up Now
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </a>`
+              : signUpUrl && isPast
+              ? `<a class="button button--secondary button--full button--disabled" disabled href="#">Registration Closed</a>`
+              : ""}
+
+            <div class="event-detail__info-list">
+              ${dateStr
+                ? `<div class="event-detail__info-item">
+                    <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <div>
+                      <strong>Date & Time</strong>
+                      <div>${html(dateStr)}${timeStr ? `<br>${html(timeStr)}` : ""}</div>
+                    </div>
+                  </div>`
+                : ""}
+
+              ${venueStr
+                ? `<div class="event-detail__info-item">
+                    <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <div>
+                      <strong>Venue</strong>
+                      <div>${html(venueStr)}</div>
+                    </div>
+                  </div>`
+                : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="event-detail__main">
+          <div class="event-detail__meta-top">
+            ${statusBadge}
+          </div>
+
+          <h1 class="event-detail__title">${html(title)}</h1>
+
+          ${summary ? `<p class="event-detail__lead">${html(summary)}</p>` : ""}
+
+          <div class="event-detail__description">
+            ${formatMarkdownText(description)}
+          </div>
+        </div>
+      </article>
+    </div>
+  `;
+}
+
+function formatMarkdownText(text) {
+  if (!text) return "";
+  const blocks = String(text).split(/\n\n+/);
+  return blocks.map((block) => {
+    block = block.trim();
+    if (!block) return "";
+    
+    if (block.startsWith("### ")) {
+      const headingText = html(block.slice(4)).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      return `<h3>${headingText}</h3>`;
+    }
+    
+    const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+    const isList = lines.length > 0 && lines.every((l) => l.startsWith("- ") || l.startsWith("* "));
+    
+    if (isList) {
+      const items = lines.map((item) => {
+        const cleaned = item.replace(/^[-*]\s+/, "");
+        const formatted = html(cleaned).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        return `<li>${formatted}</li>`;
+      }).join("");
+      return `<ul>${items}</ul>`;
+    }
+    
+    const formattedParagraph = html(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    return `<p>${formattedParagraph.replace(/\n/g, "<br>")}</p>`;
+  }).join("");
 }
 
 function renderTeamPage(data) {
@@ -610,22 +824,43 @@ function renderMember(member) {
 }
 
 function renderEvent(event) {
-  const date = value(event?.date);
+  const dateStr = value(event?.displayDate || event?.date);
+  const timeStr = formatTo24HourTime(value(event?.displayTime || event?.time));
+  const venueStr = value(event?.venue || event?.location);
   const title = value(event?.title);
-  const summary = value(event?.summary);
-  const tags = toArray(event?.tags).map((tag) => value(tag)).filter(Boolean);
+  const summary = value(event?.summary || event?.description);
+  const poster = value(event?.poster || event?.image);
+  const eventId = event?.id || getStableId(title);
+  const detailUrl = `${getPageHref("event")}?id=${encodeURIComponent(eventId)}`;
 
-  if (!date && !title && !summary && !tags.length) {
+  if (!dateStr && !title && !summary && !poster) {
     return "";
   }
 
+  const posterPath = poster ? getAssetHref(poster) : "";
+
   return `
-    <article class="event">
-      ${date ? `<div class="event__date"><span>${html(site.labels?.eventDate)}</span>${html(date)}</div>` : ""}
-      <div class="event__body">
-        ${title ? `<h3>${html(title)}</h3>` : ""}
-        ${summary ? `<p>${html(summary)}</p>` : ""}
-        ${tags.length ? `<div class="tag-row">${tags.map((tag) => `<span class="tag">${html(tag)}</span>`).join("")}</div>` : ""}
+    <article class="event${posterPath ? " event--has-poster" : ""}">
+      ${posterPath
+        ? `<div class="event__poster-box">
+            <a href="${attr(detailUrl)}" title="View event details">
+              <img class="event__poster-img" src="${attr(posterPath)}" alt="${attr(title || "Event poster")}" loading="lazy">
+            </a>
+           </div>`
+        : ""}
+      <div class="event__details">
+        <div class="event__header-meta">
+          ${dateStr ? `<span class="event__date-badge"><svg class="icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${html(dateStr)}${timeStr ? ` · ${html(timeStr)}` : ""}</span>` : ""}
+          ${venueStr ? `<span class="event__venue-badge"><svg class="icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${html(venueStr)}</span>` : ""}
+        </div>
+        ${title ? `<h3 class="event__title"><a href="${attr(detailUrl)}">${html(title)}</a></h3>` : ""}
+        ${summary ? `<p class="event__summary">${html(summary)}</p>` : ""}
+        <div class="event__footer-row">
+          <div class="event__actions">
+            <a class="button button--secondary button--sm" href="${attr(detailUrl)}">View Details</a>
+            ${event?.signUpUrl ? `<a class="button button--primary button--sm" href="${attr(event.signUpUrl)}" target="_blank" rel="noreferrer">Sign Up</a>` : ""}
+          </div>
+        </div>
       </div>
     </article>
   `;
@@ -801,4 +1036,15 @@ function html(item) {
 
 function attr(item) {
   return html(item);
+}
+
+function formatTo24HourTime(timeString) {
+  if (!timeString) return "";
+  return String(timeString).replace(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)/gi, (match, hours, minutes, period) => {
+    let h = parseInt(hours, 10);
+    const p = period.toUpperCase();
+    if (p === "PM" && h < 12) h += 12;
+    if (p === "AM" && h === 12) h = 0;
+    return `${String(h).padStart(2, "0")}:${minutes}`;
+  });
 }
