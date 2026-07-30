@@ -1,9 +1,9 @@
-import { aboutPage } from "../content/about.js";
-import { eventsPage } from "../content/events-page.js";
-import { homePage } from "../content/home.js";
-import { joinPage } from "../content/join-page.js";
-import { site } from "../content/site.js";
-import { teamPage } from "../content/team-page.js";
+import { aboutPage } from "../content/about.js?v=2";
+import { eventsPage } from "../content/events-page.js?v=2";
+import { homePage } from "../content/home.js?v=2";
+import { joinPage } from "../content/join-page.js?v=2";
+import { site } from "../content/site.js?v=2";
+import { teamPage } from "../content/team-page.js?v=2";
 
 const pages = {
   home: homePage,
@@ -171,16 +171,29 @@ function renderFooter() {
   `;
 }
 
+function getSocialIcon(type, href) {
+  if (type === "instagram" || (href && href.includes("instagram.com"))) {
+    return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
+  }
+  if (type === "email" || (href && href.startsWith("mailto:"))) {
+    return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+  }
+  return "";
+}
+
 function renderFooterLink(item) {
   const label = value(item?.label);
   const href = value(item?.href);
+  const type = value(item?.type);
 
   if (!label || !href) {
     return "";
   }
 
+  const icon = getSocialIcon(type, href);
   const external = isExternalHref(href);
-  return `<a href="${attr(href)}" ${external ? 'target="_blank" rel="noreferrer"' : ""}>${html(label)}</a>`;
+
+  return `<a href="${attr(href)}" class="footer__link" ${external ? 'target="_blank" rel="noreferrer"' : ""}>${icon}<span>${html(label)}</span></a>`;
 }
 
 function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] }) {
