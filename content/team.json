@@ -1,23 +1,23 @@
 [
-    {
-        "id": "vishrutiranjan",
-        "name": "Vishruti Ranjan",
-        "title": "Chair",
-        "summary": "PhD student in Computer Science",
-        "photo": "assets/images/members/vishrutiranjan.jpg",
-    },
-    {
-        "id": "tanyawarrier",
-        "name": "Tanya Warrier",
-        "title": "Vice Chair",
-        "summary": "Masters student in Artificial Intelligence",
-        "photo": "assets/images/members/tanyawarrier.jpg",
-    },
-    {
-        "id": "shreyagangopadhyay",
-        "name": "Shreya Gangopadhyay",
-        "title": "Membership Chair",
-        "summary": "PhD student in Computer Science",
-        "photo": "assets/images/members/shreyagangopadhyay.jpg",
-    },
+  {
+    "id": "vishrutiranjan",
+    "name": "Vishruti Ranjan",
+    "title": "Chair",
+    "summary": "PhD student in Computer Science",
+    "photo": "assets/images/members/vishrutiranjan.jpg"
+  },
+  {
+    "id": "tanyawarrier",
+    "name": "Tanya Warrier",
+    "title": "Vice Chair",
+    "summary": "Masters student in Artificial Intelligence",
+    "photo": "assets/images/members/tanyawarrier.jpg"
+  },
+  {
+    "id": "shreyagangopadhyay",
+    "name": "Shreya Gangopadhyay",
+    "title": "Membership Chair",
+    "summary": "PhD student in Computer Science",
+    "photo": ""
+  }
 ]

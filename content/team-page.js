@@ -1,8 +1,8 @@
 export const teamPage = {
   title: "Team",
-  description: "Meet the ACM-W NUS team once chapter roles are published.",
+  description: "Meet the ACM-W NUS chapter executive committee and team members.",
   heading: "Meet the chapter team.",
-  intro: "Team members and roles will be listed here when the current chapter committee is confirmed.",
+  intro: "Meet our executive committee leading the ACM-W NUS student chapter initiatives, events, and community activities.",
   emptyState: "The chapter team has not been published yet.",
   members: [],
   callout: {
