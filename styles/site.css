@@ -345,14 +345,22 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .card {
-  padding: 22px;
-  border-radius: 0px;
-  border: 1px solid rgba(15, 31, 51, 0.04);
-  background: var(--surface-strong);
+  padding: 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(15, 31, 51, 0.08);
+  transform: translateY(-2px);
 }
 
 .card--soft {
-  background: #fff;
+  background: #ffffff;
+  border-top: 3px solid var(--accent);
 }
 
 .card h3 {
@@ -588,11 +596,13 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   margin-top: 24px;
-  padding: 22px;
-  border-radius: 0px;
-  background: transparent;
+  padding: 30px 32px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(24, 68, 127, 0.04) 0%, rgba(230, 123, 38, 0.06) 100%);
+  border: 1px solid rgba(24, 68, 127, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
 .section__cta--stacked {
@@ -601,15 +611,24 @@ h1, h2, h3, h4, h5, h6,
   flex-wrap: wrap;
 }
 
-.section__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+.section__cta h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin: 0 0 6px 0;
 }
 
 .section__cta p {
   margin: 0;
+  font-size: 1rem;
   color: var(--muted);
+  line-height: 1.5;
+}
+
+.section__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .page-heading {
@@ -669,7 +688,30 @@ h1, h2, h3, h4, h5, h6,
 .footer__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  align-items: center;
+  gap: 18px;
+}
+
+.footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.footer__link:hover {
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.footer__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .utility-note {
@@ -682,38 +724,60 @@ h1, h2, h3, h4, h5, h6,
 
 .join-tabs {
   display: grid;
-  gap: 24px;
+  gap: 32px;
+  margin-top: 24px;
 }
 
 .join-tabs__list {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 8px;
-  border-bottom: 1px solid rgba(15, 31, 51, 0.08);
+  gap: 6px;
+  padding: 6px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  width: fit-content;
 }
 
 .join-tabs__button {
   appearance: none;
-  border: 0;
-  border-bottom: 4px solid transparent;
-  border-radius: 0px;
+  border: none;
+  border-radius: 30px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  font: inherit;
-  font-weight: 800;
-  padding: 12px 16px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 10px 22px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.join-tabs__button:hover,
+.join-tabs__button:hover {
+  color: var(--primary-dark);
+}
+
 .join-tabs__button[aria-selected="true"] {
-  color: var(--accent-dark);
-  border-bottom-color: var(--accent);
+  color: #fff;
+  background: var(--primary);
+  box-shadow: 0 4px 12px rgba(24, 68, 127, 0.25);
 }
 
 .join-tabs__panel {
   display: grid;
-  gap: 24px;
+  gap: 36px;
+  animation: fadeInTab 0.3s ease;
+}
+
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .join-tabs__panel[hidden] {
@@ -722,7 +786,22 @@ h1, h2, h3, h4, h5, h6,
 
 .join-tabs__block {
   display: grid;
-  gap: 18px;
+  gap: 20px;
+}
+
+.join-tabs__panel .card {
+  padding: 24px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.join-tabs__panel .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 31, 51, 0.08);
 }
 
 @media (max-width: 960px) {

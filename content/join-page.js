@@ -8,13 +8,11 @@ export const joinPage = {
       id: "member",
       label: "Member",
       heading: "Join the executive committee.",
-      intro: "Applications are open for students who want to help organise ACM-W NUS activities for the community.",
-      cards: [
-        { title: "What you will do", text: "Plan events, coordinate outreach, support chapter operations, and work with the team to create meaningful opportunities for students." },
-      ],
+      intro: "Applications are open for NUS students who want to help organise ACM-W NUS activities for the community. As an Exco member, you will plan events, coordinate outreach, support chapter operations, and work with the team to create meaningful opportunities for students.",
+      cards: [],
       application: {
-        heading: "Apply here",
-        intro: "Use this form to let us know how you would like to contribute.",
+        heading: "",
+        intro: "",
         title: "Application form",
         text: "The chapter team will review submissions and follow up with next steps.",
         formUrl: "https://forms.cloud.microsoft/r/s3iqA5DW1K",
@@ -51,7 +49,7 @@ export const joinPage = {
         },
         {
           title: "Collaboration and sponsorship",
-          text: "For collaboration or sponsorship requests, please contact us directly. The chapter email will be updated here later.",
+          text: "For collaboration or sponsorship requests, please contact us directly at nusacmwchapter@gmail.com or DM us on Instagram @acmwnus.",
         },
       ],
     },
