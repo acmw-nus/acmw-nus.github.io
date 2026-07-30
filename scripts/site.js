@@ -3,7 +3,7 @@ import { eventsPage } from "../content/events-page.js?v=2";
 import { homePage } from "../content/home.js?v=2";
 import { joinPage } from "../content/join-page.js?v=2";
 import { site } from "../content/site.js?v=2";
-import { teamPage } from "../content/team-page.js?v=2";
+import { teamPage } from "../content/team-page.js?v=3";
 
 const pages = {
   home: homePage,
@@ -32,6 +32,21 @@ async function loadEventsData() {
     console.warn("Could not load content/events.json, using fallback events if available.", err);
   }
   return toArray(eventsPage.events);
+}
+
+async function loadTeamData() {
+  try {
+    const res = await fetch(getAssetHref("content/team.json"));
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load content/team.json, using fallback team members if available.", err);
+  }
+  return toArray(teamPage.members);
 }
 
 function categorizeEvents(eventsList) {
@@ -63,6 +78,7 @@ async function initApp() {
   updateDocumentMetadata(pageData);
 
   const rawEvents = await loadEventsData();
+  const rawTeam = await loadTeamData();
   const categorizedEvents = categorizeEvents(rawEvents);
 
   if (main) {
@@ -70,7 +86,7 @@ async function initApp() {
       ${renderHeader()}
       <main class="site-main">
         <div class="container">
-          ${renderPage(page, categorizedEvents)}
+          ${renderPage(page, categorizedEvents, rawTeam)}
         </div>
       </main>
       ${renderFooter()}
@@ -196,7 +212,7 @@ function renderFooterLink(item) {
   return `<a href="${attr(href)}" class="footer__link" ${external ? 'target="_blank" rel="noreferrer"' : ""}>${icon}<span>${html(label)}</span></a>`;
 }
 
-function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] }) {
+function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] }, teamMembers = []) {
   if (currentPage === "home") {
     return renderHomePage(homePage, categorizedEvents);
   }
@@ -221,7 +237,11 @@ function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] })
   }
 
   if (currentPage === "team") {
-    return renderTeamPage(teamPage);
+    const teamData = {
+      ...teamPage,
+      members: teamMembers.length ? teamMembers : teamPage.members,
+    };
+    return renderTeamPage(teamData);
   }
 
   if (currentPage === "join") {
@@ -460,7 +480,7 @@ function renderTeamPage(data) {
     ${members.length || value(data.emptyState)
       ? `<section class="section">
           ${members.length
-            ? `<div class="grid grid--two">${members.map(renderMember).filter(Boolean).join("")}</div>`
+            ? `<div class="grid grid--three">${members.map(renderMember).filter(Boolean).join("")}</div>`
             : renderUtilityNote(data.emptyState)}
         </section>`
       : ""}
@@ -797,29 +817,37 @@ function renderPillar(item) {
   return `<article class="card card--soft">${title ? `<div class="card__meta">${html(title)}</div>` : ""}${textContent ? `<p>${html(textContent)}</p>` : ""}</article>`;
 }
 
+function getInitials(name) {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function renderMember(member) {
   const name = value(member?.name);
-  const role = value(member?.role);
-  const initials = value(member?.initials);
-  const summary = value(member?.summary);
+  const role = value(member?.role || member?.title);
+  const initials = value(member?.initials) || getInitials(name);
+  const summary = value(member?.summary || member?.bio || member?.description);
+  const photo = value(member?.photo || member?.image || member?.avatar);
 
   if (!name && !role && !initials && !summary) {
     return "";
   }
 
+  const avatarMarkup = photo
+    ? `<img class="team-member__photo" src="${attr(getAssetHref(photo))}" alt="${attr(name)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><div class="team-member__avatar-fallback" style="display:none">${html(initials)}</div>`
+    : `<div class="team-member__avatar-fallback">${html(initials)}</div>`;
+
   return `
-    <article class="card card--soft">
-      ${name || role || initials
-        ? `<div class="profile">
-            ${initials ? `<div class="profile__avatar">${html(initials)}</div>` : ""}
-            <div>
-              ${name ? `<p class="profile__name">${html(name)}</p>` : ""}
-              ${role ? `<p class="profile__role">${html(role)}</p>` : ""}
-            </div>
-          </div>`
-        : ""}
-      ${summary ? `<p class="profile__summary">${html(summary)}</p>` : ""}
-    </article>
+    <div class="team-member">
+      <div class="team-member__photo-wrapper">
+        ${avatarMarkup}
+      </div>
+      ${name ? `<h3 class="team-member__name">${html(name)}</h3>` : ""}
+      ${role ? `<div class="team-member__role">${html(role)}</div>` : ""}
+      ${summary ? `<p class="team-member__summary">${html(summary)}</p>` : ""}
+    </div>
   `;
 }
 
