@@ -39,7 +39,7 @@ async function loadTeamData() {
     const res = await fetch(getAssetHref("content/team.json"));
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data)) {
+      if (Array.isArray(data) || (data && (Array.isArray(data.members) || Array.isArray(data.sections)))) {
         return data;
       }
     }
@@ -239,7 +239,11 @@ function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] },
   if (currentPage === "team") {
     const teamData = {
       ...teamPage,
-      members: teamMembers.length ? teamMembers : teamPage.members,
+      ...(Array.isArray(teamMembers)
+        ? { members: teamMembers }
+        : typeof teamMembers === "object" && teamMembers !== null
+        ? teamMembers
+        : { members: teamPage.members }),
     };
     return renderTeamPage(teamData);
   }
@@ -472,20 +476,91 @@ function formatMarkdownText(text) {
 }
 
 function renderTeamPage(data) {
-  const members = toArray(data.members);
+  let members = [];
+  let sections = [];
+
+  if (Array.isArray(data)) {
+    members = data;
+  } else if (data && typeof data === "object") {
+    if (Array.isArray(data.sections)) {
+      sections = data.sections;
+    }
+    if (Array.isArray(data.members)) {
+      members = data.members;
+    }
+  }
+
+  if (!sections.length && members.length) {
+    const hasCategories = members.some((m) => m?.category || m?.group || m?.section);
+    if (hasCategories) {
+      const categoryMap = new Map();
+      const categorySubtitles = {
+        "Executive Committee": "Leading student chapter initiatives, events, membership, and community activities.",
+        "Faculty Advisor": "Guiding the chapter's vision, faculty relations, and academic integration.",
+      };
+      const categoryOrder = ["Executive Committee", "Faculty Advisor"];
+
+      members.forEach((m) => {
+        const cat = value(m?.category || m?.group || m?.section) || "Executive Committee";
+        if (!categoryMap.has(cat)) {
+          categoryMap.set(cat, []);
+        }
+        categoryMap.get(cat).push(m);
+      });
+
+      const sortedCategories = Array.from(categoryMap.keys()).sort((a, b) => {
+        const indexA = categoryOrder.indexOf(a);
+        const indexB = categoryOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return 0;
+      });
+
+      sections = sortedCategories.map((heading) => ({
+        heading,
+        intro: categorySubtitles[heading] || "",
+        members: categoryMap.get(heading),
+      }));
+    }
+  }
+
+  let contentMarkup = "";
+
+  if (sections.length) {
+    contentMarkup = sections
+      .map((sec) => {
+        const secMembers = toArray(sec.members);
+        const visibleMembers = secMembers.map(renderMember).filter(Boolean);
+        if (!visibleMembers.length) return "";
+
+        const gridClass = visibleMembers.length < 3 ? "grid grid--centered" : "grid grid--three";
+
+        return `
+          <section class="section team-section">
+            <div class="team-section__header">
+              <h2 class="team-section__title">${html(sec.heading)}</h2>
+              ${sec.intro ? `<p class="team-section__subtitle">${html(sec.intro)}</p>` : ""}
+            </div>
+            <div class="${gridClass}">${visibleMembers.join("")}</div>
+          </section>
+        `;
+      })
+      .filter(Boolean)
+      .join("");
+  } else if (members.length) {
+    const visibleMembers = members.map(renderMember).filter(Boolean);
+    contentMarkup = visibleMembers.length
+      ? `<section class="section"><div class="grid grid--three">${visibleMembers.join("")}</div></section>`
+      : renderUtilityNote(data.emptyState || teamPage.emptyState);
+  } else {
+    contentMarkup = renderUtilityNote(data.emptyState || teamPage.emptyState);
+  }
 
   return `
     ${renderPageHeading(data)}
-
-    ${members.length || value(data.emptyState)
-      ? `<section class="section">
-          ${members.length
-            ? `<div class="grid grid--three">${members.map(renderMember).filter(Boolean).join("")}</div>`
-            : renderUtilityNote(data.emptyState)}
-        </section>`
-      : ""}
-
-    ${renderCallout(data.callout)}
+    ${contentMarkup}
+    ${renderCallout(data.callout || teamPage.callout)}
   `;
 }
 
