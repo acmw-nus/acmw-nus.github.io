@@ -1,5 +1,13 @@
 [
   {
+    "id": "bimleshwadhwa",
+    "name": "Dr. Bimlesh Wadhwa",
+    "title": "Founding Faculty Advisor",
+    "summary": "Founding Chair, ACM-W Asia Pacific",
+    "photo": "assets/images/members/bimleshwadhwa.jpeg",
+    "category": "Faculty Advisor"
+  },
+  {
     "id": "vishrutiranjan",
     "name": "Vishruti Ranjan",
     "title": "Chair",
@@ -22,13 +30,5 @@
     "summary": "PhD student in Computer Science",
     "photo": "assets/images/members/shreyagangopadhyay.jpeg",
     "category": "Executive Committee"
-  },
-  {
-    "id": "bimleshwadhwa",
-    "name": "Dr. Bimlesh Wadhwa",
-    "title": "Founding Faculty Advisor",
-    "summary": "Founding Chair, ACM-W Asia Pacific",
-    "photo": "assets/images/members/bimleshwadhwa.jpeg",
-    "category": "Faculty Advisor"
   }
 ]

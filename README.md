@@ -1,6 +1,6 @@
-# ACM-W NUS Website
+# NUS ACM-W Website
 
-This is a website for the ACM-W NUS Chapter.
+This is a website for the NUS ACM-W Chapter.
 
 For routine updates, edit the content files in `content/` instead of changing the page templates or renderer.
 

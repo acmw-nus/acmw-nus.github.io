@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve the ACM-W NUS website.
+Thanks for helping improve the NUS ACM-W website.
 
 ## How to Contribute
 
