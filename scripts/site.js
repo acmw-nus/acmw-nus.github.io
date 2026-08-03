@@ -1094,10 +1094,10 @@ function getLinkHref(link) {
 
 function getPageHref(targetPage) {
   if (targetPage === "home") {
-    return isHomePage ? "index.html" : "../index.html";
+    return isHomePage ? "./" : "../";
   }
 
-  return isHomePage ? `pages/${targetPage}.html` : `${targetPage}.html`;
+  return isHomePage ? `${targetPage}/` : `../${targetPage}/`;
 }
 
 function getAssetHref(assetPath) {
