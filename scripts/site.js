@@ -11,7 +11,7 @@ const pages = {
   events: eventsPage,
   team: teamPage,
   join: joinPage,
-  event: { title: "Event Details", description: "ACM-W NUS event details and registration" },
+  event: { title: "Event Details", description: "NUS ACM-W event details and registration" },
 };
 
 const page = document.body.dataset.page || "home";
@@ -191,6 +191,9 @@ function getSocialIcon(type, href) {
   if (type === "instagram" || (href && href.includes("instagram.com"))) {
     return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
   }
+  if (type === "x" || type === "twitter" || (href && (href.includes("x.com") || href.includes("twitter.com")))) {
+    return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+  }
   if (type === "email" || (href && href.startsWith("mailto:"))) {
     return `<svg class="footer__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
   }
@@ -231,7 +234,7 @@ function renderPage(currentPage, categorizedEvents = { upcoming: [], past: [] },
     const allEvents = categorizedEvents.all || [];
     const matchedEvent = allEvents.find((evt) => evt.id === id) || allEvents[0];
     if (matchedEvent?.title) {
-      document.title = `${matchedEvent.title} - ACM-W NUS`;
+      document.title = `${matchedEvent.title} - NUS ACM-W`;
     }
     return renderEventDetailPage(matchedEvent);
   }
@@ -291,20 +294,32 @@ function renderHomePage(data, categorizedEvents = { upcoming: [], past: [] }) {
 }
 
 function renderAboutPage(data) {
-  const missionCards = [data.missionAlignment, data.chapterIdentity];
+  const missionCards = [data.missionAlignment, data.chapterIdentity].filter(Boolean);
   const contextCards = [
     { title: data.context?.fitTitle, text: data.context?.fitText },
     { title: data.context?.whyTitle, text: data.context?.whyText },
-  ];
+  ].filter((c) => value(c.title) || value(c.text));
   const pillars = toArray(data.pillars?.items);
+  const communityCards = toArray(data.communityFocus?.items);
+  const calloutActions = renderActionRow(data.callout?.actions, "hero__actions");
 
   return `
     ${renderPageHeading(data)}
 
-    ${renderCardSection({
-      cards: missionCards,
-      gridClass: "grid--two",
+    ${renderPillarSection({
+      heading: data.pillars?.title,
+      intro: data.pillars?.intro,
+      items: pillars,
     })}
+
+    ${communityCards.length
+      ? renderCardSection({
+          heading: data.communityFocus?.title,
+          intro: data.communityFocus?.intro,
+          cards: communityCards,
+          gridClass: "grid--three",
+        })
+      : ""}
 
     ${renderAffiliationSection({
       heading: data.context?.title,
@@ -313,13 +328,20 @@ function renderAboutPage(data) {
       gridClass: "grid--two",
       logo: data.context?.logo,
       logoAlt: data.context?.logoAlt,
+      url: data.context?.url,
     })}
 
-    ${renderPillarSection({
-      heading: data.pillars?.title,
-      intro: data.pillars?.intro,
-      items: pillars,
-    })}
+    ${value(data.callout?.heading) || value(data.callout?.text) || calloutActions
+      ? `<section class="section">
+          <div class="section__cta">
+            <div>
+              ${value(data.callout?.heading) ? `<h3>${html(data.callout.heading)}</h3>` : ""}
+              ${value(data.callout?.text) ? `<p>${html(data.callout.text)}</p>` : ""}
+            </div>
+            ${calloutActions}
+          </div>
+        </section>`
+      : ""}
   `;
 }
 
@@ -495,10 +517,10 @@ function renderTeamPage(data) {
     if (hasCategories) {
       const categoryMap = new Map();
       const categorySubtitles = {
-        "Executive Committee": "Leading student chapter initiatives, events, membership, and community activities.",
         "Faculty Advisor": "Guiding the chapter's vision, faculty relations, and academic integration.",
+        "Executive Committee": "Leading student chapter initiatives, events, membership, and community activities.",
       };
-      const categoryOrder = ["Executive Committee", "Faculty Advisor"];
+      const categoryOrder = ["Faculty Advisor", "Executive Committee"];
 
       members.forEach((m) => {
         const cat = value(m?.category || m?.group || m?.section) || "Executive Committee";
@@ -577,7 +599,7 @@ function renderJoinPage(data) {
   const application = data.application || {};
   const formAction = getJoinFormAction(data);
   const applicationPanel = value(application.title) || value(application.text) || formAction
-    ? `<div class="section__cta section__cta--stacked">
+    ? `<div class="section__cta">
         ${value(application.title) || value(application.text)
           ? `<div>
               ${value(application.title) ? `<h3>${html(application.title)}</h3>` : ""}
@@ -685,7 +707,7 @@ function renderJoinApplication(application) {
 
   const formAction = getJoinFormAction({ application });
   const applicationPanel = value(application.title) || value(application.text) || formAction
-    ? `<div class="section__cta section__cta--stacked">
+    ? `<div class="section__cta">
         ${value(application.title) || value(application.text)
           ? `<div>
               ${value(application.title) ? `<h3>${html(application.title)}</h3>` : ""}
@@ -775,25 +797,32 @@ function renderCardSection({ heading, intro, cards, gridClass, cardRenderer = re
   `;
 }
 
-function renderAffiliationSection({ heading, intro, cards, gridClass, logo, logoAlt }) {
+function renderAffiliationSection({ heading, intro, cards, gridClass, logo, logoAlt, url }) {
   const visibleCards = toArray(cards).map(renderCard).filter(Boolean);
   const headingText = value(heading);
   const introText = value(intro);
   const logoPath = value(logo);
+  const linkUrl = value(url);
 
   if (!headingText && !introText && !visibleCards.length && !logoPath) {
     return "";
   }
+
+  const formattedIntro = linkUrl && introText
+    ? html(introText).replace(/ACM-W Asia Pacific/g, `<a href="${attr(linkUrl)}" target="_blank" rel="noopener noreferrer" class="link--text">ACM-W Asia Pacific</a>`)
+    : html(introText);
 
   return `
     <section class="section section--affiliation">
       ${headingText ? renderSectionHeader(headingText, "") : ""}
       ${introText || logoPath
         ? `<div class="affiliation">
-            ${introText ? `<p>${html(introText)}</p>` : ""}
+            ${introText ? `<p>${formattedIntro}</p>` : ""}
             ${logoPath
               ? `<div class="affiliation-logo">
-                  <img src="${attr(getAssetHref(logoPath))}" alt="${attr(logoAlt)}">
+                  ${linkUrl ? `<a href="${attr(linkUrl)}" target="_blank" rel="noopener noreferrer">` : ""}
+                    <img src="${attr(getAssetHref(logoPath))}" alt="${attr(logoAlt)}">
+                  ${linkUrl ? `</a>` : ""}
                 </div>`
               : ""}
           </div>`

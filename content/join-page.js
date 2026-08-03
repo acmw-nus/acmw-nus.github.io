@@ -1,14 +1,14 @@
 export const joinPage = {
   title: "Join the Chapter",
-  description: "Get involved with ACM-W NUS as a student member, faculty mentor, partner, or sponsor.",
-  heading: "Get involved with ACM-W NUS.",
+  description: "Get involved with NUS ACM-W as a student member, faculty mentor, partner, or sponsor.",
+  heading: "Get involved with NUS ACM-W.",
   intro: "",
   tabs: [
     {
       id: "member",
       label: "Member",
-      heading: "Join the executive committee.",
-      intro: "Applications are open for NUS students who want to help organise ACM-W NUS activities for the community. As an Exco member, you will plan events, coordinate outreach, support chapter operations, and work with the team to create meaningful opportunities for students.",
+      heading: "Join as a student member.",
+      intro: "Applications are open for NUS students who want to help organise NUS ACM-W activities for the community. As a member, you will work with the team to organise events, mentor, and support chapter activities, creating meaningful opportunities for students.",
       cards: [],
       application: {
         heading: "",
@@ -24,7 +24,7 @@ export const joinPage = {
         items: [
           {
             question: "Who can apply?",
-            answer: "NUS students who want to help organise ACM-W NUS activities and support the chapter community are welcome to apply.",
+            answer: "NUS students who want to help organise NUS ACM-W activities and support the chapter community are welcome to apply.",
           },
           {
             question: "Do I need organising or leadership experience?",
@@ -41,7 +41,7 @@ export const joinPage = {
       id: "faculty-sponsor",
       label: "Faculty/Sponsor",
       heading: "Support as faculty, partner, or sponsor.",
-      intro: "Faculty mentors, partners, and sponsors can support ACM-W NUS through guidance, opportunities, sponsorship, or collaboration.",
+      intro: "Faculty mentors, partners, and sponsors can support NUS ACM-W through guidance, opportunities, sponsorship, or collaboration.",
       cards: [
         {
           title: "NUS faculty",

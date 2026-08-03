@@ -1,13 +1,15 @@
 export const site = {
-  description: "ACM-W NUS is a student-led chapter at the National University of Singapore for women and allies in computing.",
+  description: "NUS ACM-W is a student-led chapter building a community that focuses on advocating inclusivity, sharing experiences, and amplifying impact of women and gender diverse students in computing research and education.",
   email: "nusacmwchapter@gmail.com",
   instagram: "acmwnus",
+  x: "acmwnus",
+  twitter: "acmwnus",
   chapter: {
-    name: "ACM-W NUS Chapter",
-    shortName: "ACM-W NUS",
+    name: "NUS ACM-W Chapter",
+    shortName: "NUS ACM-W",
     location: "National University of Singapore",
     logo: "assets/images/acmw-singapore-student.png",
-    logoAlt: "ACM-W NUS chapter logo",
+    logoAlt: "NUS ACM-W chapter logo",
     favicon: "assets/images/acmw-singapore-student.png",
   },
   labels: {
@@ -22,6 +24,7 @@ export const site = {
   ],
   socialLinks: [
     { type: "instagram", label: "@acmwnus", href: "https://www.instagram.com/acmwnus" },
+    { type: "x", label: "@acmwnus", href: "https://x.com/acmwnus" },
     { type: "email", label: "nusacmwchapter@gmail.com", href: "mailto:nusacmwchapter@gmail.com" },
   ],
   notFound: {

@@ -1,20 +1,39 @@
 export const aboutPage = {
   title: "About the Chapter",
-  description: "Learn about ACM-W NUS, its mission, and its relationship with ACM-W Asia Pacific.",
-  heading: "A student-led ACM-W chapter at NUS.",
-  intro: "ACM-W NUS reflects ACM-W's commitment to supporting, celebrating, and advocating for women in computing. As a local student-led chapter, we shape that mission around the students, faculty, and partners who make up the computing community at the National University of Singapore.",
+  description: "Learn about NUS ACM-W, its mission, core pillars, and relationship with ACM-W Asia Pacific.",
+  heading: "Empowering voices, building community, and advancing computing.",
+  intro: "At NUS ACM-W, we create spaces where women and gender diverse students in computing can thrive. From peer mentorship and casual chats to research showcases and leadership opportunities, our student-led chapter bridges academic growth with personal empowerment at the National University of Singapore.",
+  pillars: {
+    title: "Core Pillars",
+    intro: "Our three core pillars guide how our chapter plans events, builds community, and supports members.",
+    items: [
+      {
+        title: "ADVOCATING INCLUSIVITY",
+        text: "Fostering an open, equitable, and welcoming space for women and gender diverse students across computing fields at NUS.",
+      },
+      {
+        title: "SHARING EXPERIENCES",
+        text: "Creating opportunities for authentic connection, peer mentorship, coffee chats, and exchanging stories across research and education.",
+      },
+      {
+        title: "AMPLIFYING IMPACT",
+        text: "Empowering students and researchers to showcase their work, build leadership skills, and drive meaningful innovation in computing.",
+      },
+    ],
+  },
   context: {
-    intro: "We are part of ACM-W Asia Pacific, connecting our NUS community with a broader regional network of women in computing.",
+    title: "Regional Network",
+    intro: "NUS ACM-W is proud to be part of ACM-W Asia Pacific (ACM-W AP), connecting our NUS community with a broader regional network of chapters, leaders, and advocates dedicated to celebrating women in computing.",
+    url: "https://acmwasiapacific.acm.org/",
     logo: "assets/images/acmw-logo-asia-pacific.jpg",
     logoAlt: "ACM-W Asia Pacific logo",
   },
-  pillars: {
-    title: "Core pillars",
-    intro: "Our core pillars are derived from the main ACM-W pillars and guide how the chapter plans events, collaborations, and member support.",
-    items: [
-      { title: "Celebrate", text: "Recognise achievements and make the work of women in computing more visible." },
-      { title: "Inform", text: "Share talks, workshops, opportunities, and pathways for continued growth." },
-      { title: "Support", text: "Create welcoming ways for students to join, volunteer, learn, and lead." },
+  callout: {
+    heading: "Get involved with NUS ACM-W",
+    text: "Whether you want to join as a student member, attend our upcoming sessions, or partner with us as a mentor or sponsor, we'd love to connect.",
+    actions: [
+      { label: "Join the chapter", page: "join", variant: "primary" },
+      { label: "Meet the team", page: "team", variant: "secondary" },
     ],
   },
 };

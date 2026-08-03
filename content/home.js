@@ -1,14 +1,14 @@
 export const homePage = {
-  title: "ACM-W NUS Chapter",
-  description: "ACM-W NUS supports, celebrates, and advocates for women and allies in computing at the National University of Singapore.",
+  title: "NUS ACM-W Chapter",
+  description: "NUS ACM-W advocates inclusivity, shares experiences, and amplifies the impact of women and gender diverse students in computing research and education.",
   hero: {
-    heading: "Supporting, celebrating, and advocating for women in computing.",
-    intro: "ACM-W NUS is a student-led chapter connected to the ACM-W Asia Pacific community. We create space for students to learn, connect, lead, and grow in computing.",
+    heading: "Advocating inclusivity, sharing experiences, and amplifying impact.",
+    intro: "NUS ACM-W is a student-led chapter connected to the ACM-W Asia Pacific community. We are building a community that focuses on supporting, celebrating, and advocating for women and gender diverse students in computing.",
     image: "assets/images/acmw-singapore-student.png",
     imageAlt: "ACM-W student community illustration",
     actions: [
       { label: "Join the chapter", page: "join", variant: "primary" },
-      { label: "Learn about ACM-W NUS", page: "about", variant: "secondary" },
+      { label: "Learn about NUS ACM-W", page: "about", variant: "secondary" },
     ],
   },
   eventsPreview: {
