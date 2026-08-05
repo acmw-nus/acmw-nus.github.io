@@ -18,7 +18,7 @@ export const site = {
   navigation: [
     { label: "Home", page: "home" },
     { label: "About", page: "about" },
-    { label: "Events", page: "events" },
+    { label: "Events & News", page: "events" },
     { label: "Team", page: "team" },
     { label: "Join", page: "join" },
   ],

@@ -348,6 +348,8 @@ function renderAboutPage(data) {
 function renderEventsPage(data, categorizedEvents = { upcoming: [], past: [] }) {
   const upcomingEvents = toArray(categorizedEvents.upcoming);
   const pastEvents = toArray(categorizedEvents.past);
+  const newsHeading = data.newsHeading || data.pastHeading || "Recent News";
+  const newsEmptyState = data.newsEmptyState || data.pastEmptyState || "No recent news updates to show yet.";
 
   return `
     ${renderPageHeading(data)}
@@ -358,11 +360,11 @@ function renderEventsPage(data, categorizedEvents = { upcoming: [], past: [] }) 
       emptyState: data.upcomingEmptyState || "No upcoming events scheduled right now. Check back soon!",
     })}
 
-    ${pastEvents.length || data.pastHeading
+    ${pastEvents.length || newsHeading
       ? renderEventSection({
-          heading: data.pastHeading || "Past Events",
+          heading: newsHeading,
           events: pastEvents,
-          emptyState: data.pastEmptyState || "No past events to show yet.",
+          emptyState: newsEmptyState,
         })
       : ""}
   `;
@@ -372,8 +374,8 @@ function renderEventDetailPage(event) {
   if (!event) {
     return `
       <section class="section">
-        <a class="back-link" href="${attr(getPageHref("events"))}">&larr; Back to all events</a>
-        ${renderUtilityNote("Event not found. Please check back later or view our full list of events.")}
+        <a class="back-link" href="${attr(getPageHref("events"))}">&larr; Back to all events & news</a>
+        ${renderUtilityNote("Event or news update not found. Please check back later or view our full list of events & news.")}
       </section>
     `;
   }
@@ -394,7 +396,7 @@ function renderEventDetailPage(event) {
   const timeBoundaryStr = event.endDate || event.startDate;
   const isPast = timeBoundaryStr && !isNaN(new Date(timeBoundaryStr).getTime()) && new Date(timeBoundaryStr) < now;
   const statusBadge = isPast
-    ? `<span class="event-status-badge event-status-badge--past">Past Event</span>`
+    ? `<span class="event-status-badge event-status-badge--past">Recent News</span>`
     : `<span class="event-status-badge event-status-badge--upcoming">Upcoming Event</span>`;
 
   return `
@@ -402,7 +404,7 @@ function renderEventDetailPage(event) {
       <div class="event-detail-header">
         <a class="back-link" href="${attr(getPageHref("events"))}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Back to all events
+          Back to all events & news
         </a>
       </div>
 
