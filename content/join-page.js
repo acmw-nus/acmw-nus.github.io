@@ -49,7 +49,7 @@ export const joinPage = {
         },
         {
           title: "Collaboration and sponsorship",
-          text: "For collaboration or sponsorship requests, please contact us directly at nusacmwchapter@gmail.com or DM us on Instagram @acmwnus.",
+          text: "For collaboration or sponsorship requests, please contact us directly at nusacmwchapter@gmail.com or DM us on Instagram @nusacmw.",
         },
       ],
     },

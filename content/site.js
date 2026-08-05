@@ -1,9 +1,9 @@
 export const site = {
   description: "NUS ACM-W is a student-led chapter building a community that focuses on advocating inclusivity, sharing experiences, and amplifying impact of women and gender diverse students in computing research and education.",
   email: "nusacmwchapter@gmail.com",
-  instagram: "acmwnus",
-  x: "acmwnus",
-  twitter: "acmwnus",
+  instagram: "nusacmw",
+  x: "nusacmw",
+  twitter: "nusacmw",
   chapter: {
     name: "NUS ACM-W Chapter",
     shortName: "NUS ACM-W",
@@ -23,8 +23,8 @@ export const site = {
     { label: "Join", page: "join" },
   ],
   socialLinks: [
-    { type: "instagram", label: "@acmwnus", href: "https://www.instagram.com/acmwnus" },
-    { type: "x", label: "@acmwnus", href: "https://x.com/acmwnus" },
+    { type: "instagram", label: "@nusacmw", href: "https://www.instagram.com/nusacmw" },
+    { type: "x", label: "@nusacmw", href: "https://x.com/nusacmw" },
     { type: "email", label: "nusacmwchapter@gmail.com", href: "mailto:nusacmwchapter@gmail.com" },
   ],
   notFound: {
