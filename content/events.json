@@ -11,5 +11,16 @@
     "venue": "Meeting room 3 @ COM 2",
     "poster": "assets/posters/coffee_chat.png",
     "signUpUrl": "https://forms.cloud.microsoft/pages/responsepage.aspx?id=Xu-lWwkxd06Fvc_rDTR-gn1BKX6y685Gk58hXIdzEAFURFpJSkY1S1NCSzFVRjVUQzFKQkNaOE41RS4u&route=shorturl"
+  },
+  {
+    "id": "soc-freshmen-welcome-2026",
+    "title": "Welcoming Freshmen at SoC Official Welcome 2026",
+    "summary": "NUS ACM-W welcomed the incoming Class of 2026 at the SoC Official Welcome for Freshmen at the University Cultural Centre. Our EXCO connected with enthusiastic freshmen, sharing our mission to support, celebrate, and amplify women and gender-diverse students in computing.",
+    "description": "On 5th August 2026, NUS ACM-W hosted an engaging booth at the School of Computing (SoC) Official Welcome for Freshmen held at the University Cultural Centre.\n\nOur Executive Committee (EXCO) had a wonderful time meeting and connecting with an energetic crowd of incoming undergraduate students. Throughout the session, we introduced freshmen to NUS ACM-W's core pillars:\n- **Building Community:** Fostering an inclusive, supportive network for women and gender-diverse students across computing.\n- **Sharing Experiences:** Connecting students with peer support, mentorship, and inspiring community stories.\n- **Amplifying Impact:** Empowering students to excel in computing research, education, and career development.\n\nThank you to everyone who dropped by our booth! We are thrilled to welcome the Class of 2026 to SoC and look forward to seeing you at our upcoming chapter events.",
+    "startDate": "2026-08-05T09:00:00+08:00",
+    "endDate": "2026-08-05T17:00:00+08:00",
+    "displayDate": "5 August 2026",
+    "venue": "University Cultural Centre",
+    "poster": "assets/news/2026-08-05/Image.jpeg"
   }
 ]
